@@ -9,11 +9,11 @@ import { OrderItem } from './orders/entities/order-item.entity';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      type: 'postgres',
+      type: 'mysql',
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'secretpassword',
+      username: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '123',
       database: process.env.DB_NAME || 'orders_db',
       entities: [Order, OrderItem],
       synchronize: false,
