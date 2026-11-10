@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  orders-db:
+    image: postgres:15-alpine
+    container_name: orders_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: orders_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  nats-server:
+    image: nats:latest
+    container_name: orders_nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  orders-service:
+    build: .
+    container_name: orders_service
+    environment:
+      - PORT=3000
+      - DB_HOST=orders-db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=secretpassword
+      - DB_NAME=orders_db
+      - NATS_URL=nats://nats-server:4222
+    depends_on:
+      - orders-db
+      - nats-server
+    restart: always
+
+volumes:
+  postgres_data:
